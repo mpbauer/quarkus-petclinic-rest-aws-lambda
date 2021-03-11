@@ -54,7 +54,7 @@ jobs:
     steps:
       # Print message
       - name: 'Echo message'
-        run: echo "building submodule 'owners'"
+        run: echo "building submodule 'owners' - ${{ needs.changes.outputs.owners == 'true' }}"
 
   # Job to build and deploy maven submodule 'pets'
   build-submodule-pets:
@@ -64,7 +64,7 @@ jobs:
     steps:
       # Print message
       - name: 'Echo message'
-        run: echo "building submodule 'pets'"
+        run: echo "building submodule 'pets' - ${{ needs.changes.outputs.pets == 'true' }}"
 
   # Job to build and deploy maven submodule 'pettypes'
   build-submodule-pettypes:
@@ -84,7 +84,7 @@ jobs:
     steps:
       # Print message
       - name: 'Echo message'
-        run: echo "building submodule 'specialties'"
+        run: echo "building submodule 'specialties' - ${{ needs.changes.outputs.pettypes == 'true' }}"
 
   # Job to build and deploy maven submodule 'users'
   build-submodule-users:
@@ -94,7 +94,7 @@ jobs:
     steps:
       # Print message
       - name: 'Echo message'
-        run: echo "building submodule 'users'"
+        run: echo "building submodule 'users' - ${{ needs.changes.outputs.users == 'true' }}"
 
   # Job to build and deploy maven submodule 'vets'
   build-submodule-vets:
@@ -104,7 +104,7 @@ jobs:
     steps:
       # Print message
       - name: 'Echo message'
-        run: echo "building submodule 'vets'"
+        run: echo "building submodule 'vets' - ${{ needs.changes.outputs.vets == 'true' }}"
 
   # Job to build and deploy maven submodule 'visits'
   build-submodule-visits:
@@ -114,4 +114,4 @@ jobs:
     steps:
       # Print message
       - name: 'Echo message'
-        run: echo "building submodule 'visits'"
+        run: echo "building submodule 'visits' - ${{ needs.changes.outputs.visits == 'true' }}"
