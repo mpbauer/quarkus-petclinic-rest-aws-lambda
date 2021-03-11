@@ -1,6 +1,6 @@
   AWSTemplateFormatVersion: '2010-09-09'
   Transform: AWS::Serverless-2016-10-31
-  Description: AWS Serverless Quarkus HTTP - quarkus-petclinic-rest-aws-lambda-visits-1.0.0-SNAPSHOT
+  Description: Quarkus Petclinic REST AWS Lambda - Pet Types API (JVM)
   Globals:
     Api:
       EndpointConfiguration: REGIONAL
@@ -25,7 +25,7 @@
       Description: DB database
 
   Resources:
-    QuarkusPetclinicRestAwsLambdaVisits:
+    PetTypes:
       Type: AWS::Serverless::Function
       Properties:
         Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
@@ -46,8 +46,8 @@
             Type: HttpApi
 
   Outputs:
-    QuarkusPetclinicRestAwsLambdaVisitsApi:
+    PetTypesApi:
       Description: URL for application
       Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/'
       Export:
-        Name: QuarkusPetclinicRestAwsLambdaVisitsApi
+        Name: QuarkusPetclinicRestPetTypesApi
