@@ -52,9 +52,17 @@ jobs:
     if: ${{ needs.changes.outputs.owners == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Print message
-      - name: 'Echo message'
-        run: echo "building submodule 'owners' - ${{ needs.changes.outputs.owners == 'true' }}"
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        run: mvn clean package
+
+  # ------------------------------------------------------------------------- #
 
   # Job to build and deploy maven submodule 'pets'
   build-submodule-pets:
@@ -62,9 +70,17 @@ jobs:
     if: ${{ needs.changes.outputs.pets == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Print message
-      - name: 'Echo message'
-        run: echo "building submodule 'pets' - ${{ needs.changes.outputs.pets == 'true' }}"
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        run: mvn clean package
+
+  # ------------------------------------------------------------------------- #
 
   # Job to build and deploy maven submodule 'pettypes'
   build-submodule-pettypes:
@@ -72,9 +88,16 @@ jobs:
     if: ${{ needs.changes.outputs.pettypes == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Print message
-      - name: 'Echo message'
-        run: echo "building submodule 'pettypes'"
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        run: mvn clean package
+  # ------------------------------------------------------------------------- #
 
   # Job to build and deploy maven submodule 'specialties'
   build-submodule-specialties:
@@ -82,9 +105,17 @@ jobs:
     if: ${{ needs.changes.outputs.specialties == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Print message
-      - name: 'Echo message'
-        run: echo "building submodule 'specialties' - ${{ needs.changes.outputs.pettypes == 'true' }}"
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        run: mvn clean package
+
+  # ------------------------------------------------------------------------- #
 
   # Job to build and deploy maven submodule 'users'
   build-submodule-users:
@@ -92,9 +123,18 @@ jobs:
     if: ${{ needs.changes.outputs.users == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Print message
-      - name: 'Echo message'
-        run: echo "building submodule 'users' - ${{ needs.changes.outputs.users == 'true' }}"
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        run: mvn clean package
+
+  # ------------------------------------------------------------------------- #
+
 
   # Job to build and deploy maven submodule 'vets'
   build-submodule-vets:
@@ -102,9 +142,17 @@ jobs:
     if: ${{ needs.changes.outputs.vets == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Print message
-      - name: 'Echo message'
-        run: echo "building submodule 'vets' - ${{ needs.changes.outputs.vets == 'true' }}"
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        run: mvn clean package
+
+  # ------------------------------------------------------------------------- #
 
   # Job to build and deploy maven submodule 'visits'
   build-submodule-visits:
@@ -112,6 +160,12 @@ jobs:
     if: ${{ needs.changes.outputs.visits == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Print message
-      - name: 'Echo message'
-        run: echo "building submodule 'visits' - ${{ needs.changes.outputs.visits == 'true' }}"
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        run: mvn clean package

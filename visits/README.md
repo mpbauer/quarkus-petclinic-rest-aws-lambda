@@ -44,21 +44,3 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 You can then execute your native executable with: `./target/vets-1.0.0-SNAPSHOT-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.html.
-
-## Related guides
-
-- RESTEasy JAX-RS ([guide](https://quarkus.io/guides/rest-json)): REST endpoint framework implementing JAX-RS and more
-
-## Provided examples
-
-### RESTEasy JAX-RS example
-
-REST is easy peasy with this Hello World RESTEasy resource.
-
-[Related guide section...](https://quarkus.io/guides/getting-started#the-jax-rs-resources)
-
-### RESTEasy JSON serialisation using Jackson
-
-This example demonstrate RESTEasy JSON serialisation by letting you list, add and remove quark types from a list. Quarked!
-
-[Related guide section...](https://quarkus.io/guides/rest-json#creating-your-first-json-rest-service)
