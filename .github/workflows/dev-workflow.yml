@@ -1,0 +1,141 @@
+name: DevelopmentCI
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+
+env:
+  SHORT_SHA_12: $(git rev-parse --short=12 ${{ github.sha }})
+
+jobs:
+  # JOB to run change detection
+  changes:
+    runs-on: ubuntu-latest
+    # Set job outputs to values from filter step
+    outputs:
+      owners: ${{ steps.filter.outputs.owners }}
+      pets: ${{ steps.filter.outputs.pets }}
+      pettypes: ${{ steps.filter.outputs.pettypes }}
+      specialties: ${{ steps.filter.outputs.specialties }}
+      users: ${{ steps.filter.outputs.users }}
+      vets: ${{ steps.filter.outputs.vets }}
+      visits: ${{ steps.filter.outputs.visits }}
+    steps:
+      # For pull requests it's not necessary to checkout the code
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            owners:
+              - 'owners/**'
+            pets:
+              - 'pets/**'
+            pettypes:
+              - 'pettypes/**'
+            specialties:
+              - 'specialties/**'
+            users:
+              - 'users/**'
+            vets:
+              - 'vets/**'
+            visits:
+              - 'visits/**'
+
+  # Job to build and deploy maven submodule 'owners'
+  build-submodule-owners:
+    needs: changes
+    if: ${{ needs.changes.outputs.owners == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Print message
+      - name: 'Echo message'
+          run: echo "building submodule 'owners'"
+
+  # Job to build and deploy maven submodule 'pets'
+  build-submodule-pets:
+    needs: changes
+    if: ${{ needs.changes.outputs.pets == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Print message
+      - name: 'Echo message'
+          run: echo "building submodule 'pets'"
+
+  # Job to build and deploy maven submodule 'pettypes'
+  build-submodule-pettypes:
+    needs: changes
+    if: ${{ needs.changes.outputs.pettypes == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Print message
+      - name: 'Echo message'
+          run: echo "building submodule 'pettypes'"
+
+  # Job to build and deploy maven submodule 'specialties'
+  build-submodule-specialties:
+    needs: changes
+    if: ${{ needs.changes.outputs.specialties == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Print message
+      - name: 'Echo message'
+          run: echo "building submodule 'specialties'"
+
+  # Job to build and deploy maven submodule 'users'
+  build-submodule-users:
+    needs: changes
+    if: ${{ needs.changes.outputs.users == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Print message
+      - name: 'Echo message'
+          run: echo "building submodule 'users'"
+
+  # Job to build and deploy maven submodule 'vets'
+  build-submodule-vets:
+    needs: changes
+    if: ${{ needs.changes.outputs.vets == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Print message
+      - name: 'Echo message'
+          run: echo "building submodule 'vets'"
+
+  # Job to build and deploy maven submodule 'visits'
+  build-submodule-visits:
+    needs: changes
+    if: ${{ needs.changes.outputs.visits == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Print message
+      - name: 'Echo message'
+          run: echo "building submodule 'visits'"

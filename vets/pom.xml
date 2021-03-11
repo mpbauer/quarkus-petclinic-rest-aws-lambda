@@ -13,14 +13,6 @@
   <version>1.0.0-SNAPSHOT</version>
 
   <dependencies>
-
-    <!-- Common code shared across all modules -->
-    <dependency>
-      <groupId>com.mpbauer.serverless.samples</groupId>
-      <artifactId>quarkus-petclinic-rest-aws-lambda-commons</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-
     <!-- Application dependencies -->
     <dependency>
       <groupId>io.quarkus</groupId>
