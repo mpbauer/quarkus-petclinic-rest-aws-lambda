@@ -54,7 +54,7 @@ jobs:
 
       # Print message
       - name: 'Echo message'
-          run: echo "building submodule 'owners'"
+        run: echo "building submodule 'owners'"
 
   # Job to build and deploy maven submodule 'pets'
   build-submodule-pets:
@@ -68,7 +68,7 @@ jobs:
 
       # Print message
       - name: 'Echo message'
-          run: echo "building submodule 'pets'"
+        run: echo "building submodule 'pets'"
 
   # Job to build and deploy maven submodule 'pettypes'
   build-submodule-pettypes:
@@ -82,7 +82,7 @@ jobs:
 
       # Print message
       - name: 'Echo message'
-          run: echo "building submodule 'pettypes'"
+        run: echo "building submodule 'pettypes'"
 
   # Job to build and deploy maven submodule 'specialties'
   build-submodule-specialties:
@@ -96,7 +96,7 @@ jobs:
 
       # Print message
       - name: 'Echo message'
-          run: echo "building submodule 'specialties'"
+        run: echo "building submodule 'specialties'"
 
   # Job to build and deploy maven submodule 'users'
   build-submodule-users:
@@ -110,7 +110,7 @@ jobs:
 
       # Print message
       - name: 'Echo message'
-          run: echo "building submodule 'users'"
+        run: echo "building submodule 'users'"
 
   # Job to build and deploy maven submodule 'vets'
   build-submodule-vets:
@@ -124,7 +124,7 @@ jobs:
 
       # Print message
       - name: 'Echo message'
-          run: echo "building submodule 'vets'"
+        run: echo "building submodule 'vets'"
 
   # Job to build and deploy maven submodule 'visits'
   build-submodule-visits:
@@ -138,4 +138,4 @@ jobs:
 
       # Print message
       - name: 'Echo message'
-          run: echo "building submodule 'visits'"
+        run: echo "building submodule 'visits'"
