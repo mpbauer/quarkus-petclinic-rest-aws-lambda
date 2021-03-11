@@ -22,6 +22,10 @@ jobs:
       vets: ${{ steps.filter.outputs.vets }}
       visits: ${{ steps.filter.outputs.visits }}
     steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
       # For pull requests it's not necessary to checkout the code
       - uses: dorny/paths-filter@v2
         id: filter
@@ -48,10 +52,6 @@ jobs:
     if: ${{ needs.changes.outputs.owners == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Clone git project
-      - name: 'Clone Git Project'
-        uses: actions/checkout@v2
-
       # Print message
       - name: 'Echo message'
         run: echo "building submodule 'owners'"
@@ -62,10 +62,6 @@ jobs:
     if: ${{ needs.changes.outputs.pets == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Clone git project
-      - name: 'Clone Git Project'
-        uses: actions/checkout@v2
-
       # Print message
       - name: 'Echo message'
         run: echo "building submodule 'pets'"
@@ -76,10 +72,6 @@ jobs:
     if: ${{ needs.changes.outputs.pettypes == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Clone git project
-      - name: 'Clone Git Project'
-        uses: actions/checkout@v2
-
       # Print message
       - name: 'Echo message'
         run: echo "building submodule 'pettypes'"
@@ -90,10 +82,6 @@ jobs:
     if: ${{ needs.changes.outputs.specialties == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Clone git project
-      - name: 'Clone Git Project'
-        uses: actions/checkout@v2
-
       # Print message
       - name: 'Echo message'
         run: echo "building submodule 'specialties'"
@@ -104,10 +92,6 @@ jobs:
     if: ${{ needs.changes.outputs.users == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Clone git project
-      - name: 'Clone Git Project'
-        uses: actions/checkout@v2
-
       # Print message
       - name: 'Echo message'
         run: echo "building submodule 'users'"
@@ -118,10 +102,6 @@ jobs:
     if: ${{ needs.changes.outputs.vets == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Clone git project
-      - name: 'Clone Git Project'
-        uses: actions/checkout@v2
-
       # Print message
       - name: 'Echo message'
         run: echo "building submodule 'vets'"
@@ -132,10 +112,6 @@ jobs:
     if: ${{ needs.changes.outputs.visits == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      # Clone git project
-      - name: 'Clone Git Project'
-        uses: actions/checkout@v2
-
       # Print message
       - name: 'Echo message'
         run: echo "building submodule 'visits'"
