@@ -46,6 +46,10 @@ jobs:
             visits:
               - 'visits/**'
 
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: owners
+  # ------------------------------------------------------------------------- #
+
   # Job to build and deploy maven submodule 'owners'
   build-submodule-owners:
     needs: changes
@@ -67,6 +71,39 @@ jobs:
         working-directory: ./owners
         run: mvn clean package
 
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 'SAM Deploy'
+        working-directory: ./owners
+        run: |
+          # Run SAM Deploy
+          sam deploy --template-file sam.jvm.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-owners \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: pets
   # ------------------------------------------------------------------------- #
 
   # Job to build and deploy maven submodule 'pets'
@@ -90,6 +127,38 @@ jobs:
         working-directory: ./pets
         run: mvn clean package
 
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 'SAM Deploy'
+        working-directory: ./pets
+        run: |
+          # Run SAM Deploy
+          sam deploy --template-file sam.jvm.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-pets \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: pettypes
   # ------------------------------------------------------------------------- #
 
   # Job to build and deploy maven submodule 'pettypes'
@@ -112,6 +181,41 @@ jobs:
       - name: 'Build & Test'
         working-directory: ./pettypes
         run: mvn clean package
+
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 'SAM Deploy'
+        working-directory: ./pettypes
+        run: |
+          # Run SAM Deploy
+          sam deploy --template-file sam.jvm.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-pettypes \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
+
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: specialties
   # ------------------------------------------------------------------------- #
 
   # Job to build and deploy maven submodule 'specialties'
@@ -135,6 +239,38 @@ jobs:
         working-directory: ./specialties
         run: mvn clean package
 
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 'SAM Deploy'
+        working-directory: ./specialties
+        run: |
+          # Run SAM Deploy
+          sam deploy --template-file sam.jvm.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-specialties \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: users
   # ------------------------------------------------------------------------- #
 
   # Job to build and deploy maven submodule 'users'
@@ -158,8 +294,39 @@ jobs:
         working-directory: ./users
         run: mvn clean package
 
-  # ------------------------------------------------------------------------- #
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
 
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 'SAM Deploy'
+        working-directory: ./users
+        run: |
+          # Run SAM Deploy
+          sam deploy --template-file sam.jvm.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-users \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: vets
+  # ------------------------------------------------------------------------- #
 
   # Job to build and deploy maven submodule 'vets'
   build-submodule-vets:
@@ -182,6 +349,39 @@ jobs:
         working-directory: ./vets
         run: mvn clean package
 
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 'SAM Deploy'
+        working-directory: ./vets
+        run: |
+          # Run SAM Deploy
+          sam deploy --template-file sam.jvm.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-vets \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: visits
   # ------------------------------------------------------------------------- #
 
   # Job to build and deploy maven submodule 'visits'
