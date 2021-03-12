@@ -1,12 +1,9 @@
-name: DevelopmentCI
+name: DevelopmentCI-Native
 
 on:
   push:
     branches: [ develop ]
   workflow_dispatch:
-
-env:
-  SHORT_SHA_12: $(git rev-parse --short=12 ${{ github.sha }})
 
 jobs:
   # JOB to run change detection
@@ -57,19 +54,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Clone git project
-      - name: 'Clone Git Project'
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      # Set up JDK 11
-      - name: 'Set up JDK 11'
-        uses: actions/setup-java@v1
+      # Set up GraalVM 20.3.1 with Java 11
+      - name: 'Setup GraalVM Environment'
+        uses: DeLaGuardo/setup-graalvm@master
         with:
-          java-version: 11
+          graalvm-version: '20.3.1.java11'
+
+      # Install GraalVM native-image plugin
+      - name: 'Install GraalVM Native Image Plugin'
+        run: |
+          gu install native-image
 
       # Build and test the application
-      - name: 'Build & Test'
-        working-directory: ./owners
-        run: mvn clean package
+      - name: 'Build & Test Native Image'
+        run: mvn package -Pnative
 
       # Install dependencies required installing the AWS CLI
       - name: 'Install Dependencies with Apt Get'
@@ -77,6 +77,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install python3.8 jq -y
 
+      # Configure AWS credentials
       - name: 'Configure AWS credentials'
         id: creds
         uses: aws-actions/configure-aws-credentials@v1
@@ -85,12 +86,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: 'SAM Deploy'
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
         working-directory: ./owners
         run: |
-          # Run SAM Deploy
-          sam deploy --template-file sam.jvm.yaml \
-            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-owners \
+          sam deploy --template-file sam.native.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-native-dev-owners \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
             --capabilities CAPABILITY_IAM \
             --region ${{ secrets.AWS_REGION }} \
@@ -100,7 +101,6 @@ jobs:
                 dbHost=${{ secrets.AWS_DB_HOST }} \
                 dbPort=${{ secrets.AWS_DB_PORT }} \
                 dbDatabase=${{ secrets.AWS_DB_DATABASE }}
-
 
   # ------------------------------------------------------------------------- #
   #  Build Job for Maven Submodule: pets
@@ -133,6 +133,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install python3.8 jq -y
 
+      # Configure AWS credentials
       - name: 'Configure AWS credentials'
         id: creds
         uses: aws-actions/configure-aws-credentials@v1
@@ -141,12 +142,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: 'SAM Deploy'
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
         working-directory: ./pets
         run: |
-          # Run SAM Deploy
-          sam deploy --template-file sam.jvm.yaml \
-            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-pets \
+          sam deploy --template-file sam.native.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-native-dev-pets \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
             --capabilities CAPABILITY_IAM \
             --region ${{ secrets.AWS_REGION }} \
@@ -188,6 +189,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install python3.8 jq -y
 
+      # Configure AWS credentials
       - name: 'Configure AWS credentials'
         id: creds
         uses: aws-actions/configure-aws-credentials@v1
@@ -196,12 +198,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: 'SAM Deploy'
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
         working-directory: ./pettypes
         run: |
-          # Run SAM Deploy
-          sam deploy --template-file sam.jvm.yaml \
-            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-pettypes \
+          sam deploy --template-file sam.native.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-native-dev-pettypes \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
             --capabilities CAPABILITY_IAM \
             --region ${{ secrets.AWS_REGION }} \
@@ -211,8 +213,6 @@ jobs:
                 dbHost=${{ secrets.AWS_DB_HOST }} \
                 dbPort=${{ secrets.AWS_DB_PORT }} \
                 dbDatabase=${{ secrets.AWS_DB_DATABASE }}
-
-
 
   # ------------------------------------------------------------------------- #
   #  Build Job for Maven Submodule: specialties
@@ -245,6 +245,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install python3.8 jq -y
 
+      # Configure AWS credentials
       - name: 'Configure AWS credentials'
         id: creds
         uses: aws-actions/configure-aws-credentials@v1
@@ -253,12 +254,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: 'SAM Deploy'
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
         working-directory: ./specialties
         run: |
-          # Run SAM Deploy
-          sam deploy --template-file sam.jvm.yaml \
-            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-specialties \
+          sam deploy --template-file sam.native.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-native-dev-specialties \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
             --capabilities CAPABILITY_IAM \
             --region ${{ secrets.AWS_REGION }} \
@@ -300,6 +301,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install python3.8 jq -y
 
+      # Configure AWS credentials
       - name: 'Configure AWS credentials'
         id: creds
         uses: aws-actions/configure-aws-credentials@v1
@@ -308,12 +310,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: 'SAM Deploy'
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
         working-directory: ./users
         run: |
-          # Run SAM Deploy
-          sam deploy --template-file sam.jvm.yaml \
-            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-users \
+          sam deploy --template-file sam.native.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-native-dev-users \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
             --capabilities CAPABILITY_IAM \
             --region ${{ secrets.AWS_REGION }} \
@@ -355,6 +357,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install python3.8 jq -y
 
+      # Configure AWS credentials
       - name: 'Configure AWS credentials'
         id: creds
         uses: aws-actions/configure-aws-credentials@v1
@@ -363,12 +366,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: 'SAM Deploy'
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
         working-directory: ./vets
         run: |
-          # Run SAM Deploy
-          sam deploy --template-file sam.jvm.yaml \
-            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-vets \
+          sam deploy --template-file sam.native.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-native-dev-vets \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
             --capabilities CAPABILITY_IAM \
             --region ${{ secrets.AWS_REGION }} \
@@ -378,7 +381,6 @@ jobs:
                 dbHost=${{ secrets.AWS_DB_HOST }} \
                 dbPort=${{ secrets.AWS_DB_PORT }} \
                 dbDatabase=${{ secrets.AWS_DB_DATABASE }}
-
 
   # ------------------------------------------------------------------------- #
   #  Build Job for Maven Submodule: visits
@@ -411,6 +413,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install python3.8 jq -y
 
+      # Configure AWS credentials
       - name: 'Configure AWS credentials'
         id: creds
         uses: aws-actions/configure-aws-credentials@v1
@@ -419,12 +422,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: 'SAM Deploy'
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
         working-directory: ./visits
         run: |
-          # Run SAM Deploy
-          sam deploy --template-file sam.jvm.yaml \
-            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-visits \
+          sam deploy --template-file sam.native.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-native-dev-visits \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
             --capabilities CAPABILITY_IAM \
             --region ${{ secrets.AWS_REGION }} \
@@ -434,4 +437,3 @@ jobs:
                 dbHost=${{ secrets.AWS_DB_HOST }} \
                 dbPort=${{ secrets.AWS_DB_PORT }} \
                 dbDatabase=${{ secrets.AWS_DB_DATABASE }}
-

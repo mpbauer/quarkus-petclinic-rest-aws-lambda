@@ -25,7 +25,7 @@
       Description: DB database
 
   Resources:
-    VisitsNative:
+    VisitNative:
       Type: AWS::Serverless::Function
       Properties:
         Handler: not.used.in.provided.runtimei
@@ -47,8 +47,8 @@
             Type: HttpApi
 
   Outputs:
-    VisitsNativeApi:
+    VisitNativeApi:
       Description: URL for application
       Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/'
       Export:
-        Name: QuarkusPetclinicRestVisitsNativeApi
+        Name: QuarkusPetclinicRestVisitNativeApi

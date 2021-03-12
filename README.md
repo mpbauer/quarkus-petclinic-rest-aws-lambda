@@ -19,3 +19,17 @@ In GitHub, you need to set up the following secrets via your repositories settin
 - `AWS_DB_DATABASE` - The name of the database
 - `AWS_DB_USERNAME` - The username of the database
 - `AWS_DB_PASSWORD` - The password of the database
+
+
+## URLs Development Environment:
+
+| Service          | URL
+| ---------------- |:-------------:
+| Owner API        | https://mgw7duxp6l.execute-api.eu-central-1.amazonaws.com/petclinic/api/owners
+| Pet API          | https://9bb7ibso0f.execute-api.eu-central-1.amazonaws.com/petclinic/api/pets
+| Pet Types API    | https://8fv85mksp7.execute-api.eu-central-1.amazonaws.com/petclinic/api/pettypes
+| Specialties API  | https://9wgevfz04k.execute-api.eu-central-1.amazonaws.com/petclinic/api/specialties
+| User API         | https://6fnceo26we.execute-api.eu-central-1.amazonaws.com/petclinic/api/users
+| Vet API          | https://im8083pax8.execute-api.eu-central-1.amazonaws.com/petclinic/api/vets
+| Visit API        | https://itek5pcax7.execute-api.eu-central-1.amazonaws.com/petclinic/api/visits
+

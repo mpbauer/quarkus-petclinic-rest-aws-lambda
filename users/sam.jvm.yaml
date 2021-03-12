@@ -46,8 +46,8 @@
             Type: HttpApi
 
   Outputs:
-    UsersApi:
+    UserApi:
       Description: URL for application
       Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/'
       Export:
-        Name: QuarkusPetclinicRestUsersApi
+        Name: QuarkusPetclinicRestUserApi

@@ -46,8 +46,8 @@
             Type: HttpApi
 
   Outputs:
-    OwnersApi:
+    OwnerApi:
       Description: URL for application
       Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/'
       Export:
-        Name: QuarkusPetclinicRestOwnersApi
+        Name: QuarkusPetclinicRestOwnerApi

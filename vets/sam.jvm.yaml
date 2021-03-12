@@ -46,8 +46,8 @@
             Type: HttpApi
 
   Outputs:
-    VetsApi:
+    VetApi:
       Description: URL for application
       Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/'
       Export:
-        Name: QuarkusPetclinicRestVetsApi
+        Name: QuarkusPetclinicRestVetApi
