@@ -1,0 +1,53 @@
+  AWSTemplateFormatVersion: '2010-09-09'
+  Transform: AWS::Serverless-2016-10-31
+  Description: Quarkus Petclinic REST AWS Lambda - Visits API (JVM)
+  Globals:
+    Api:
+      EndpointConfiguration: REGIONAL
+      BinaryMediaTypes:
+        - "*/*"
+
+  Parameters:
+    dbUsername:
+      Type: String
+      Description: DB username
+    dbPassword:
+      Type: String
+      Description: DB password
+    dbHost:
+      Type: String
+      Description: DB host
+    dbPort:
+      Type: String
+      Description: DB port
+    dbDatabase:
+      Type: String
+      Description: DB database
+
+  Resources:
+    VisitsDev:
+      Type: AWS::Serverless::Function
+      Properties:
+        Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
+        Runtime: java11
+        CodeUri: target/function.zip
+        MemorySize: 512
+        Policies: AWSLambdaBasicExecutionRole
+        Timeout: 15
+        Environment:
+          Variables:
+            DB_USERNAME: !Ref dbUsername
+            DB_PASSWORD: !Ref dbPassword
+            DB_HOST: !Ref dbHost
+            DB_PORT: !Ref dbPort
+            DB_DATABASE: !Ref dbDatabase
+        Events:
+          HttpApiEvent:
+            Type: HttpApi
+
+  Outputs:
+    VisitDevApi:
+      Description: URL for application
+      Value: !Sub 'https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/'
+      Export:
+        Name: QuarkusPetclinicRestVisitDevApi

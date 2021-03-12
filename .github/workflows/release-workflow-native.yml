@@ -1,4 +1,4 @@
-name: DevelopmentCI-Native
+name: ReleaseCI-Native
 
 on:
   push:
@@ -91,7 +91,7 @@ jobs:
       - name: 'Deploy to AWS Lambda'
         working-directory: ./owners
         run: |
-          sam deploy --template-file sam.native.yaml \
+          sam deploy --template-file sam.native.prod.yaml \
             --stack-name quarkus-petclinic-rest-aws-lambda-native-prod-owners \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_PROD }} \
             --capabilities CAPABILITY_IAM \
@@ -152,7 +152,7 @@ jobs:
       - name: 'Deploy to AWS Lambda'
         working-directory: ./pets
         run: |
-          sam deploy --template-file sam.native.yaml \
+          sam deploy --template-file sam.native.prod.yaml \
             --stack-name quarkus-petclinic-rest-aws-lambda-native-prod-pets \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_PROD }} \
             --capabilities CAPABILITY_IAM \
@@ -213,7 +213,7 @@ jobs:
       - name: 'Deploy to AWS Lambda'
         working-directory: ./pettypes
         run: |
-          sam deploy --template-file sam.native.yaml \
+          sam deploy --template-file sam.native.prod.yaml \
             --stack-name quarkus-petclinic-rest-aws-lambda-native-prod-pettypes \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_PROD }} \
             --capabilities CAPABILITY_IAM \
@@ -274,7 +274,7 @@ jobs:
       - name: 'Deploy to AWS Lambda'
         working-directory: ./specialties
         run: |
-          sam deploy --template-file sam.native.yaml \
+          sam deploy --template-file sam.native.prod.yaml \
             --stack-name quarkus-petclinic-rest-aws-lambda-native-prod-specialties \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_PROD }} \
             --capabilities CAPABILITY_IAM \
@@ -335,7 +335,7 @@ jobs:
       - name: 'Deploy to AWS Lambda'
         working-directory: ./users
         run: |
-          sam deploy --template-file sam.native.yaml \
+          sam deploy --template-file sam.native.prod.yaml \
             --stack-name quarkus-petclinic-rest-aws-lambda-native-prod-users \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_PROD }} \
             --capabilities CAPABILITY_IAM \
@@ -396,7 +396,7 @@ jobs:
       - name: 'Deploy to AWS Lambda'
         working-directory: ./vets
         run: |
-          sam deploy --template-file sam.native.yaml \
+          sam deploy --template-file sam.native.prod.yaml \
             --stack-name quarkus-petclinic-rest-aws-lambda-native-prod-vets \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_PROD }} \
             --capabilities CAPABILITY_IAM \
@@ -457,7 +457,7 @@ jobs:
       - name: 'Deploy to AWS Lambda'
         working-directory: ./visits
         run: |
-          sam deploy --template-file sam.native.yaml \
+          sam deploy --template-file sam.native.prod.yaml \
             --stack-name quarkus-petclinic-rest-aws-lambda-native-prod-visits \
             --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_PROD }} \
             --capabilities CAPABILITY_IAM \

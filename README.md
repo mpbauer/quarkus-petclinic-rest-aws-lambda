@@ -21,7 +21,9 @@ In GitHub, you need to set up the following secrets via your repositories settin
 - `AWS_DB_PASSWORD` - The password of the database
 
 
-## URLs Development Environment:
+## URL Endpoints - Development
+
+### Quarkus Lambda Functions running on JVM
 
 | Service          | URL
 | ---------------- |:-------------:
@@ -33,3 +35,14 @@ In GitHub, you need to set up the following secrets via your repositories settin
 | Vet API          | https://im8083pax8.execute-api.eu-central-1.amazonaws.com/petclinic/api/vets
 | Visit API        | https://itek5pcax7.execute-api.eu-central-1.amazonaws.com/petclinic/api/visits
 
+### Quarkus Lambda Functions running in Native Mode
+
+| Service          | URL
+| ---------------- |:-------------:
+| Owner API        | https://qeh5i8z4ya.execute-api.eu-central-1.amazonaws.com/petclinic/api/owners
+| Pet API          | https://wtdvyz0mrj.execute-api.eu-central-1.amazonaws.com/petclinic/api/pets
+| Pet Types API    | https://7p5d9yrv06.execute-api.eu-central-1.amazonaws.com/petclinic/api/pettypes
+| Specialties API  | https://gl94w80lt5.execute-api.eu-central-1.amazonaws.com/petclinic/api/specialties
+| User API         | https://xirmkhop1c.execute-api.eu-central-1.amazonaws.com/petclinic/api/users
+| Vet API          | https://xtfhwvw0p6.execute-api.eu-central-1.amazonaws.com/petclinic/api/vets
+| Visit API        | https://21ejizzesi.execute-api.eu-central-1.amazonaws.com/petclinic/api/visits
