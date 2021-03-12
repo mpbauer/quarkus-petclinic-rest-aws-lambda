@@ -204,3 +204,34 @@ jobs:
       - name: 'Build & Test'
         working-directory: ./visits
         run: mvn clean package
+
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 'SAM Deploy'
+        working-directory: ./visits
+        run: |
+          # Run SAM Deploy
+          sam deploy --template-file sam.jvm.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-visits \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
