@@ -1,4 +1,4 @@
-name: ReleaseCI-Native
+name: DevelopmentCI-Native
 
 on:
   push:
@@ -69,7 +69,8 @@ jobs:
 
       # Build and test the application
       - name: 'Build & Test Native Image'
-        run: mvn package -Pnative
+        working-directory: ./owners
+        run: mvn clean install -Pnative
 
       # Install dependencies required installing the AWS CLI
       - name: 'Install Dependencies with Apt Get'
@@ -116,16 +117,21 @@ jobs:
       - name: 'Clone Git Project'
         uses: actions/checkout@v2
 
-      # Set up JDK 11
-      - name: 'Set up JDK 11'
-        uses: actions/setup-java@v1
+      # Set up GraalVM 20.3.1 with Java 11
+      - name: 'Setup GraalVM Environment'
+        uses: DeLaGuardo/setup-graalvm@master
         with:
-          java-version: 11
+          graalvm-version: '20.3.1.java11'
+
+      # Install GraalVM native-image plugin
+      - name: 'Install GraalVM Native Image Plugin'
+        run: |
+          gu install native-image
 
       # Build and test the application
-      - name: 'Build & Test'
+      - name: 'Build & Test Native Image'
         working-directory: ./pets
-        run: mvn clean package
+        run: mvn clean install -Pnative
 
       # Install dependencies required installing the AWS CLI
       - name: 'Install Dependencies with Apt Get'
@@ -172,16 +178,21 @@ jobs:
       - name: 'Clone Git Project'
         uses: actions/checkout@v2
 
-      # Set up JDK 11
-      - name: 'Set up JDK 11'
-        uses: actions/setup-java@v1
+      # Set up GraalVM 20.3.1 with Java 11
+      - name: 'Setup GraalVM Environment'
+        uses: DeLaGuardo/setup-graalvm@master
         with:
-          java-version: 11
+          graalvm-version: '20.3.1.java11'
+
+      # Install GraalVM native-image plugin
+      - name: 'Install GraalVM Native Image Plugin'
+        run: |
+          gu install native-image
 
       # Build and test the application
-      - name: 'Build & Test'
+      - name: 'Build & Test Native Image'
         working-directory: ./pettypes
-        run: mvn clean package
+        run: mvn clean install -Pnative
 
       # Install dependencies required installing the AWS CLI
       - name: 'Install Dependencies with Apt Get'
@@ -228,16 +239,21 @@ jobs:
       - name: 'Clone Git Project'
         uses: actions/checkout@v2
 
-      # Set up JDK 11
-      - name: 'Set up JDK 11'
-        uses: actions/setup-java@v1
+      # Set up GraalVM 20.3.1 with Java 11
+      - name: 'Setup GraalVM Environment'
+        uses: DeLaGuardo/setup-graalvm@master
         with:
-          java-version: 11
+          graalvm-version: '20.3.1.java11'
+
+      # Install GraalVM native-image plugin
+      - name: 'Install GraalVM Native Image Plugin'
+        run: |
+          gu install native-image
 
       # Build and test the application
-      - name: 'Build & Test'
+      - name: 'Build & Test Native Image'
         working-directory: ./specialties
-        run: mvn clean package
+        run: mvn clean install -Pnative
 
       # Install dependencies required installing the AWS CLI
       - name: 'Install Dependencies with Apt Get'
@@ -284,16 +300,21 @@ jobs:
       - name: 'Clone Git Project'
         uses: actions/checkout@v2
 
-      # Set up JDK 11
-      - name: 'Set up JDK 11'
-        uses: actions/setup-java@v1
+      # Set up GraalVM 20.3.1 with Java 11
+      - name: 'Setup GraalVM Environment'
+        uses: DeLaGuardo/setup-graalvm@master
         with:
-          java-version: 11
+          graalvm-version: '20.3.1.java11'
+
+      # Install GraalVM native-image plugin
+      - name: 'Install GraalVM Native Image Plugin'
+        run: |
+          gu install native-image
 
       # Build and test the application
-      - name: 'Build & Test'
+      - name: 'Build & Test Native Image'
         working-directory: ./users
-        run: mvn clean package
+        run: mvn clean install -Pnative
 
       # Install dependencies required installing the AWS CLI
       - name: 'Install Dependencies with Apt Get'
@@ -340,16 +361,21 @@ jobs:
       - name: 'Clone Git Project'
         uses: actions/checkout@v2
 
-      # Set up JDK 11
-      - name: 'Set up JDK 11'
-        uses: actions/setup-java@v1
+      # Set up GraalVM 20.3.1 with Java 11
+      - name: 'Setup GraalVM Environment'
+        uses: DeLaGuardo/setup-graalvm@master
         with:
-          java-version: 11
+          graalvm-version: '20.3.1.java11'
+
+      # Install GraalVM native-image plugin
+      - name: 'Install GraalVM Native Image Plugin'
+        run: |
+          gu install native-image
 
       # Build and test the application
-      - name: 'Build & Test'
+      - name: 'Build & Test Native Image'
         working-directory: ./vets
-        run: mvn clean package
+        run: mvn clean install -Pnative
 
       # Install dependencies required installing the AWS CLI
       - name: 'Install Dependencies with Apt Get'
@@ -396,16 +422,21 @@ jobs:
       - name: 'Clone Git Project'
         uses: actions/checkout@v2
 
-      # Set up JDK 11
-      - name: 'Set up JDK 11'
-        uses: actions/setup-java@v1
+      # Set up GraalVM 20.3.1 with Java 11
+      - name: 'Setup GraalVM Environment'
+        uses: DeLaGuardo/setup-graalvm@master
         with:
-          java-version: 11
+          graalvm-version: '20.3.1.java11'
+
+      # Install GraalVM native-image plugin
+      - name: 'Install GraalVM Native Image Plugin'
+        run: |
+          gu install native-image
 
       # Build and test the application
-      - name: 'Build & Test'
+      - name: 'Build & Test Native Image'
         working-directory: ./visits
-        run: mvn clean package
+        run: mvn clean install -Pnative
 
       # Install dependencies required installing the AWS CLI
       - name: 'Install Dependencies with Apt Get'
