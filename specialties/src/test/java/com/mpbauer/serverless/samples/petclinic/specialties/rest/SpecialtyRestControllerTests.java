@@ -17,6 +17,7 @@
 package com.mpbauer.serverless.samples.petclinic.specialties.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mpbauer.serverless.samples.petclinic.specialties.AbstractIntegrationTest;
 import com.mpbauer.serverless.samples.petclinic.specialties.model.Specialty;
 import com.mpbauer.serverless.samples.petclinic.specialties.service.SpecialtyService;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -42,8 +43,7 @@ import static org.mockito.BDDMockito.given;
  */
 @QuarkusTest
 @QuarkusTestResource(H2DatabaseTestResource.class)
-    // TODO check if necessary for native image build
-class SpecialtyRestControllerTests {
+class SpecialtyRestControllerTests extends AbstractIntegrationTest {
 
     @InjectMock
     SpecialtyService specialtyService;
@@ -71,11 +71,10 @@ class SpecialtyRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
-    void testGetSpecialtySuccess() throws Exception {
+    void testGetSpecialtySuccess() {
         given(this.specialtyService.findSpecialtyById(1)).willReturn(specialties.get(0));
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .when()
             .get("/api/specialties/1")
@@ -87,11 +86,10 @@ class SpecialtyRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
-    void testGetSpecialtyNotFound() throws Exception {
+    void testGetSpecialtyNotFound() {
         given(this.specialtyService.findSpecialtyById(-1)).willReturn(null);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .when()
             .get("/api/specialties/-1")
@@ -100,12 +98,11 @@ class SpecialtyRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
-    void testGetAllSpecialtysSuccess() throws Exception {
+    void testGetAllSpecialtysSuccess() {
         specialties.remove(0);
         given(this.specialtyService.findAllSpecialties()).willReturn(specialties);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .when()
             .get("/api/specialties/")
@@ -119,12 +116,11 @@ class SpecialtyRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
-    void testGetAllSpecialtysNotFound() throws Exception {
+    void testGetAllSpecialtysNotFound() {
         specialties.clear();
         given(this.specialtyService.findAllSpecialties()).willReturn(specialties);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .when()
             .get("/api/specialties/")
@@ -133,14 +129,13 @@ class SpecialtyRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testCreateSpecialtySuccess() throws Exception {
         Specialty newSpecialty = specialties.get(0);
         newSpecialty.setId(999);
         ObjectMapper mapper = new ObjectMapper();
         String newSpecialtyAsJSON = mapper.writeValueAsString(newSpecialty);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newSpecialtyAsJSON)
@@ -151,7 +146,6 @@ class SpecialtyRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testCreateSpecialtyError() throws Exception {
         Specialty newSpecialty = specialties.get(0);
         newSpecialty.setId(null);
@@ -159,7 +153,7 @@ class SpecialtyRestControllerTests {
         ObjectMapper mapper = new ObjectMapper();
         String newSpecialtyAsJSON = mapper.writeValueAsString(newSpecialty);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newSpecialtyAsJSON)
@@ -170,7 +164,6 @@ class SpecialtyRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testUpdateSpecialtySuccess() throws Exception {
         given(this.specialtyService.findSpecialtyById(2)).willReturn(specialties.get(1));
         Specialty newSpecialty = specialties.get(1);
@@ -179,7 +172,7 @@ class SpecialtyRestControllerTests {
         String newSpecialtyAsJSON = mapper.writeValueAsString(newSpecialty);
 
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newSpecialtyAsJSON)
@@ -190,7 +183,7 @@ class SpecialtyRestControllerTests {
             .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .when()
@@ -203,14 +196,13 @@ class SpecialtyRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testUpdateSpecialtyError() throws Exception {
         Specialty newSpecialty = specialties.get(0);
         newSpecialty.setName("");
         ObjectMapper mapper = new ObjectMapper();
         String newSpecialtyAsJSON = mapper.writeValueAsString(newSpecialty);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newSpecialtyAsJSON)
@@ -221,14 +213,13 @@ class SpecialtyRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testDeleteSpecialtySuccess() throws Exception {
         Specialty newSpecialty = specialties.get(0);
         ObjectMapper mapper = new ObjectMapper();
         String newSpecialtyAsJSON = mapper.writeValueAsString(newSpecialty);
         given(this.specialtyService.findSpecialtyById(1)).willReturn(specialties.get(0));
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newSpecialtyAsJSON)
@@ -239,14 +230,13 @@ class SpecialtyRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testDeleteSpecialtyError() throws Exception {
         Specialty newSpecialty = specialties.get(0);
         ObjectMapper mapper = new ObjectMapper();
         String newSpecialtyAsJSON = mapper.writeValueAsString(newSpecialty);
         given(this.specialtyService.findSpecialtyById(-1)).willReturn(null);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newSpecialtyAsJSON)

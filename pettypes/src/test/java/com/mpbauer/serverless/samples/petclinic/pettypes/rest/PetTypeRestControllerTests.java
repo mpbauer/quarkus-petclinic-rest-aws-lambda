@@ -17,6 +17,7 @@
 package com.mpbauer.serverless.samples.petclinic.pettypes.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mpbauer.serverless.samples.petclinic.pettypes.AbstractIntegrationTest;
 import com.mpbauer.serverless.samples.petclinic.pettypes.model.PetType;
 import com.mpbauer.serverless.samples.petclinic.pettypes.service.PetTypeService;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -44,8 +45,7 @@ import static org.mockito.BDDMockito.given;
  */
 @QuarkusTest
 @QuarkusTestResource(H2DatabaseTestResource.class)
-        // TODO check if necessary for native image build
-class PetTypeRestControllerTests {
+class PetTypeRestControllerTests extends AbstractIntegrationTest {
 
     @InjectMock
     PetTypeService petTypeService;
@@ -78,125 +78,117 @@ class PetTypeRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="OWNER_ADMIN")
-    void testGetPetTypeSuccessAsOwnerAdmin() throws Exception {
+    void testGetPetTypeSuccessAsOwnerAdmin() {
         given(this.petTypeService.findPetTypeById(1)).willReturn(petTypes.get(0));
 
         RestAssured.given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .when()
-                .get("/api/pettypes/1")
-                .then()
-                .contentType(ContentType.JSON)
-                .statusCode(Response.Status.OK.getStatusCode())
-                .body("id", equalTo(1))
-                .body("name", equalTo("cat"));
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .when()
+            .get("/api/pettypes/1")
+            .then()
+            .contentType(ContentType.JSON)
+            .statusCode(Response.Status.OK.getStatusCode())
+            .body("id", equalTo(1))
+            .body("name", equalTo("cat"));
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
-    void testGetPetTypeSuccessAsVetAdmin() throws Exception {
+    void testGetPetTypeSuccessAsVetAdmin() {
         given(this.petTypeService.findPetTypeById(1)).willReturn(petTypes.get(0));
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .when()
-                .get("/api/pettypes/1")
-                .then()
-                .contentType(ContentType.JSON)
-                .statusCode(Response.Status.OK.getStatusCode())
-                .body("id", equalTo(1))
-                .body("name", equalTo("cat"));
+            .auth().oauth2(generateValidVetAdminToken())
+            .accept(ContentType.JSON)
+            .when()
+            .get("/api/pettypes/1")
+            .then()
+            .contentType(ContentType.JSON)
+            .statusCode(Response.Status.OK.getStatusCode())
+            .body("id", equalTo(1))
+            .body("name", equalTo("cat"));
     }
 
     @Test
-        //@WithMockUser(roles="OWNER_ADMIN")
-    void testGetPetTypeNotFound() throws Exception {
+    void testGetPetTypeNotFound() {
         given(this.petTypeService.findPetTypeById(-1)).willReturn(null);
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .when()
-                .get("/api/pettypes/-1")
-                .then()
-                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .when()
+            .get("/api/pettypes/-1")
+            .then()
+            .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
-        //@WithMockUser(roles="OWNER_ADMIN")
-    void testGetAllPetTypesSuccessAsOwnerAdmin() throws Exception {
+    void testGetAllPetTypesSuccessAsOwnerAdmin() {
         petTypes.remove(0);
         petTypes.remove(1);
         given(this.petTypeService.findAllPetTypes()).willReturn(petTypes);
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .when()
-                .get("/api/pettypes/")
-                .then()
-                .contentType(ContentType.JSON)
-                .statusCode(Response.Status.OK.getStatusCode())
-                .body("[0].id", equalTo(2))
-                .body("[0].name", equalTo("dog"))
-                .body("[1].id", equalTo(4))
-                .body("[1].name", equalTo("snake"));
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .when()
+            .get("/api/pettypes/")
+            .then()
+            .contentType(ContentType.JSON)
+            .statusCode(Response.Status.OK.getStatusCode())
+            .body("[0].id", equalTo(2))
+            .body("[0].name", equalTo("dog"))
+            .body("[1].id", equalTo(4))
+            .body("[1].name", equalTo("snake"));
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
-    void testGetAllPetTypesSuccessAsVetAdmin() throws Exception {
+    void testGetAllPetTypesSuccessAsVetAdmin() {
         petTypes.remove(0);
         petTypes.remove(1);
         given(this.petTypeService.findAllPetTypes()).willReturn(petTypes);
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .when()
-                .get("/api/pettypes/")
-                .then()
-                .contentType(ContentType.JSON)
-                .statusCode(Response.Status.OK.getStatusCode())
-                .body("[0].id", equalTo(2))
-                .body("[0].name", equalTo("dog"))
-                .body("[1].id", equalTo(4))
-                .body("[1].name", equalTo("snake"));
+            .auth().oauth2(generateValidVetAdminToken())
+            .accept(ContentType.JSON)
+            .when()
+            .get("/api/pettypes/")
+            .then()
+            .contentType(ContentType.JSON)
+            .statusCode(Response.Status.OK.getStatusCode())
+            .body("[0].id", equalTo(2))
+            .body("[0].name", equalTo("dog"))
+            .body("[1].id", equalTo(4))
+            .body("[1].name", equalTo("snake"));
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
-    void testGetAllPetTypesNotFound() throws Exception {
+    void testGetAllPetTypesNotFound() {
         petTypes.clear();
         given(this.petTypeService.findAllPetTypes()).willReturn(petTypes);
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .when()
-                .get("/api/pettypes/")
-                .then()
-                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+            .auth().oauth2(generateValidVetAdminToken())
+            .accept(ContentType.JSON)
+            .when()
+            .get("/api/pettypes/")
+            .then()
+            .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testCreatePetTypeSuccess() throws Exception {
         PetType newPetType = petTypes.get(0);
         newPetType.setId(999);
         ObjectMapper mapper = new ObjectMapper();
         String newPetTypeAsJSON = mapper.writeValueAsString(newPetType);
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newPetTypeAsJSON)
-                .when()
-                .post("/api/pettypes/")
-                .then()
-                .statusCode(Response.Status.CREATED.getStatusCode());
+            .auth().oauth2(generateValidVetAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newPetTypeAsJSON)
+            .when()
+            .post("/api/pettypes/")
+            .then()
+            .statusCode(Response.Status.CREATED.getStatusCode());
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testCreatePetTypeError() throws Exception {
         PetType newPetType = petTypes.get(0);
         newPetType.setId(null);
@@ -204,18 +196,17 @@ class PetTypeRestControllerTests {
         ObjectMapper mapper = new ObjectMapper();
         String newPetTypeAsJSON = mapper.writeValueAsString(newPetType);
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newPetTypeAsJSON)
-                .when()
-                .post("/api/pettypes/")
-                .then()
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
+            .auth().oauth2(generateValidVetAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newPetTypeAsJSON)
+            .when()
+            .post("/api/pettypes/")
+            .then()
+            .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testUpdatePetTypeSuccess() throws Exception {
         given(this.petTypeService.findPetTypeById(2)).willReturn(petTypes.get(1));
         PetType newPetType = petTypes.get(1);
@@ -223,82 +214,78 @@ class PetTypeRestControllerTests {
         ObjectMapper mapper = new ObjectMapper();
         String newPetTypeAsJSON = mapper.writeValueAsString(newPetType);
         given()
-                .auth().basic("admin", "admin")
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newPetTypeAsJSON)
-                .when()
-                .put("/api/pettypes/2")
-                .then()
-                .contentType(ContentType.JSON)
-                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+            .auth().oauth2(generateValidVetAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newPetTypeAsJSON)
+            .when()
+            .put("/api/pettypes/2")
+            .then()
+            .contentType(ContentType.JSON)
+            .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
 
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .when()
-                .get("/api/pettypes/2")
-                .then()
-                .contentType(ContentType.JSON)
-                .statusCode(Response.Status.OK.getStatusCode())
-                .body("id", equalTo(2))
-                .body("name", equalTo("dog I"));
+            .auth().oauth2(generateValidVetAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .when()
+            .get("/api/pettypes/2")
+            .then()
+            .contentType(ContentType.JSON)
+            .statusCode(Response.Status.OK.getStatusCode())
+            .body("id", equalTo(2))
+            .body("name", equalTo("dog I"));
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testUpdatePetTypeError() throws Exception {
         PetType newPetType = petTypes.get(0);
         newPetType.setName("");
         ObjectMapper mapper = new ObjectMapper();
         String newPetTypeAsJSON = mapper.writeValueAsString(newPetType);
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newPetTypeAsJSON)
-                .when()
-                .put("/api/pettypes/1")
-                .then()
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
+            .auth().oauth2(generateValidVetAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newPetTypeAsJSON)
+            .when()
+            .put("/api/pettypes/1")
+            .then()
+            .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testDeletePetTypeSuccess() throws Exception {
         PetType newPetType = petTypes.get(0);
         ObjectMapper mapper = new ObjectMapper();
         String newPetTypeAsJSON = mapper.writeValueAsString(newPetType);
         given(this.petTypeService.findPetTypeById(1)).willReturn(petTypes.get(0));
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newPetTypeAsJSON)
-                .when()
-                .delete("/api/pettypes/1")
-                .then()
-                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+            .auth().oauth2(generateValidVetAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newPetTypeAsJSON)
+            .when()
+            .delete("/api/pettypes/1")
+            .then()
+            .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testDeletePetTypeError() throws Exception {
         PetType newPetType = petTypes.get(0);
         ObjectMapper mapper = new ObjectMapper();
         String newPetTypeAsJSON = mapper.writeValueAsString(newPetType);
         given(this.petTypeService.findPetTypeById(-1)).willReturn(null);
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newPetTypeAsJSON)
-                .when()
-                .delete("/api/pettypes/-1")
-                .then()
-                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+            .auth().oauth2(generateValidVetAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newPetTypeAsJSON)
+            .when()
+            .delete("/api/pettypes/-1")
+            .then()
+            .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
-
 }

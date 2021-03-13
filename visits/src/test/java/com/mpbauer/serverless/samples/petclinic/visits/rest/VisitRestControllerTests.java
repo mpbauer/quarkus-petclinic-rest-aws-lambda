@@ -17,6 +17,7 @@
 package com.mpbauer.serverless.samples.petclinic.visits.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mpbauer.serverless.samples.petclinic.visits.AbstractIntegrationTest;
 import com.mpbauer.serverless.samples.petclinic.visits.model.Owner;
 import com.mpbauer.serverless.samples.petclinic.visits.model.Pet;
 import com.mpbauer.serverless.samples.petclinic.visits.model.PetType;
@@ -38,8 +39,8 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
 
 /**
  * Test class for {@link VisitRestController}
@@ -48,8 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 @QuarkusTest
 @QuarkusTestResource(H2DatabaseTestResource.class)
-    // TODO check if necessary for native image build
-class VisitRestControllerTests {
+class VisitRestControllerTests extends AbstractIntegrationTest {
 
     @InjectMock
     VisitService visitService;
@@ -96,11 +96,10 @@ class VisitRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="OWNER_ADMIN")
     void testGetVisitSuccess() {
         given(this.visitService.findVisitById(2)).willReturn(visits.get(0));
         given()
-            .auth().none()
+            .auth().oauth2(generateValidOwnerAdminToken())
             .accept(ContentType.JSON)
             .when()
             .get("/api/visits/2")
@@ -112,11 +111,10 @@ class VisitRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="OWNER_ADMIN")
     void testGetVisitNotFound() {
         given(this.visitService.findVisitById(-1)).willReturn(null);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidOwnerAdminToken())
             .accept(ContentType.JSON)
             .when()
             .get("/api/visits/-1")
@@ -125,11 +123,10 @@ class VisitRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="OWNER_ADMIN")
     void testGetAllVisitsSuccess() {
         given(this.visitService.findAllVisits()).willReturn(visits);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidOwnerAdminToken())
             .accept(ContentType.JSON)
             .when()
             .get("/api/visits/")
@@ -143,12 +140,11 @@ class VisitRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="OWNER_ADMIN")
     void testGetAllVisitsNotFound() {
         visits.clear();
         given(this.visitService.findAllVisits()).willReturn(visits);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidOwnerAdminToken())
             .accept(ContentType.JSON)
             .when()
             .get("/api/visits/")
@@ -157,7 +153,6 @@ class VisitRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="OWNER_ADMIN")
     void testCreateVisitSuccess() throws Exception {
         Visit newVisit = visits.get(0);
         newVisit.setId(999);
@@ -165,7 +160,7 @@ class VisitRestControllerTests {
         String newVisitAsJSON = mapper.writeValueAsString(newVisit);
         System.out.println("newVisitAsJSON " + newVisitAsJSON);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidOwnerAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newVisitAsJSON)
@@ -175,10 +170,7 @@ class VisitRestControllerTests {
             .statusCode(Response.Status.CREATED.getStatusCode());
     }
 
-    //@Test(expected = IOException.class)
-    //@WithMockUser(roles="OWNER_ADMIN")
     @Test
-    // TODO assert exception
     void testCreateVisitError() {
         assertThrows(IOException.class, () -> {
             Visit newVisit = visits.get(0);
@@ -187,7 +179,7 @@ class VisitRestControllerTests {
             ObjectMapper mapper = new ObjectMapper();
             String newVisitAsJSON = mapper.writeValueAsString(newVisit);
             given()
-                .auth().none()
+                .auth().oauth2(generateValidOwnerAdminToken())
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
                 .body(newVisitAsJSON)
@@ -199,7 +191,6 @@ class VisitRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="OWNER_ADMIN")
     void testUpdateVisitSuccess() throws Exception {
         given(this.visitService.findVisitById(2)).willReturn(visits.get(0));
         Visit newVisit = visits.get(0);
@@ -208,7 +199,7 @@ class VisitRestControllerTests {
         String newVisitAsJSON = mapper.writeValueAsString(newVisit);
 
         given()
-            .auth().none()
+            .auth().oauth2(generateValidOwnerAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newVisitAsJSON)
@@ -219,7 +210,7 @@ class VisitRestControllerTests {
             .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
         given()
-            .auth().none()
+            .auth().oauth2(generateValidOwnerAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .when()
@@ -231,10 +222,7 @@ class VisitRestControllerTests {
             .body("description", equalTo("rabies shot test"));
     }
 
-    //@Test(expected = IOException.class)
-    //@WithMockUser(roles="OWNER_ADMIN")
     @Test
-    // TODO assert exception
     void testUpdateVisitError() {
         assertThrows(IOException.class, () -> {
             Visit newVisit = visits.get(0);
@@ -242,7 +230,7 @@ class VisitRestControllerTests {
             ObjectMapper mapper = new ObjectMapper();
             String newVisitAsJSON = mapper.writeValueAsString(newVisit);
             given()
-                .auth().none()
+                .auth().oauth2(generateValidOwnerAdminToken())
                 .accept(ContentType.JSON)
                 .contentType(ContentType.JSON)
                 .body(newVisitAsJSON)
@@ -254,14 +242,13 @@ class VisitRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="OWNER_ADMIN")
     void testDeleteVisitSuccess() throws Exception {
         Visit newVisit = visits.get(0);
         ObjectMapper mapper = new ObjectMapper();
         String newVisitAsJSON = mapper.writeValueAsString(newVisit);
         given(this.visitService.findVisitById(2)).willReturn(visits.get(0));
         given()
-            .auth().none()
+            .auth().oauth2(generateValidOwnerAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newVisitAsJSON)
@@ -272,14 +259,13 @@ class VisitRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="OWNER_ADMIN")
     void testDeleteVisitError() throws Exception {
         Visit newVisit = visits.get(0);
         ObjectMapper mapper = new ObjectMapper();
         String newVisitAsJSON = mapper.writeValueAsString(newVisit);
         given(this.visitService.findVisitById(-1)).willReturn(null);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidOwnerAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newVisitAsJSON)
@@ -288,5 +274,4 @@ class VisitRestControllerTests {
             .then()
             .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
-
 }

@@ -17,6 +17,7 @@
 package com.mpbauer.serverless.samples.petclinic.vets.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mpbauer.serverless.samples.petclinic.vets.AbstractIntegrationTest;
 import com.mpbauer.serverless.samples.petclinic.vets.model.Vet;
 import com.mpbauer.serverless.samples.petclinic.vets.service.VetService;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -42,8 +43,7 @@ import static org.mockito.BDDMockito.given;
  */
 @QuarkusTest
 @QuarkusTestResource(H2DatabaseTestResource.class)
-    // TODO check if necessary for native image build
-class VetRestControllerTests {
+class VetRestControllerTests extends AbstractIntegrationTest {
 
     @InjectMock
     VetService vetService;
@@ -75,11 +75,10 @@ class VetRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
-    void testGetVetSuccess() throws Exception {
+    void testGetVetSuccess() {
         given(this.vetService.findVetById(1)).willReturn(vets.get(0));
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .when()
             .get("/api/vets/1")
@@ -91,11 +90,10 @@ class VetRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
-    void testGetVetNotFound() throws Exception {
+    void testGetVetNotFound() {
         given(this.vetService.findVetById(-1)).willReturn(null);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .when()
             .get("/api/vets/-1")
@@ -104,11 +102,10 @@ class VetRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
-    void testGetAllVetsSuccess() throws Exception {
+    void testGetAllVetsSuccess() {
         given(this.vetService.findAllVets()).willReturn(vets);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .when()
             .get("/api/vets/")
@@ -122,12 +119,11 @@ class VetRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
-    void testGetAllVetsNotFound() throws Exception {
+    void testGetAllVetsNotFound() {
         vets.clear();
         given(this.vetService.findAllVets()).willReturn(vets);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .when()
             .get("/api/vets/")
@@ -136,14 +132,13 @@ class VetRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testCreateVetSuccess() throws Exception {
         Vet newVet = vets.get(0);
         newVet.setId(999);
         ObjectMapper mapper = new ObjectMapper();
         String newVetAsJSON = mapper.writeValueAsString(newVet);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newVetAsJSON)
@@ -154,7 +149,6 @@ class VetRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testCreateVetError() throws Exception {
         Vet newVet = vets.get(0);
         newVet.setId(null);
@@ -162,7 +156,7 @@ class VetRestControllerTests {
         ObjectMapper mapper = new ObjectMapper();
         String newVetAsJSON = mapper.writeValueAsString(newVet);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newVetAsJSON)
@@ -173,7 +167,6 @@ class VetRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testUpdateVetSuccess() throws Exception {
         given(this.vetService.findVetById(1)).willReturn(vets.get(0));
         Vet newVet = vets.get(0);
@@ -182,7 +175,7 @@ class VetRestControllerTests {
         String newVetAsJSON = mapper.writeValueAsString(newVet);
 
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newVetAsJSON)
@@ -193,7 +186,7 @@ class VetRestControllerTests {
             .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .when()
@@ -206,14 +199,13 @@ class VetRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testUpdateVetError() throws Exception {
         Vet newVet = vets.get(0);
         newVet.setFirstName("");
         ObjectMapper mapper = new ObjectMapper();
         String newVetAsJSON = mapper.writeValueAsString(newVet);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newVetAsJSON)
@@ -224,14 +216,13 @@ class VetRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testDeleteVetSuccess() throws Exception {
         Vet newVet = vets.get(0);
         ObjectMapper mapper = new ObjectMapper();
         String newVetAsJSON = mapper.writeValueAsString(newVet);
         given(this.vetService.findVetById(1)).willReturn(vets.get(0));
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newVetAsJSON)
@@ -242,14 +233,13 @@ class VetRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="VET_ADMIN")
     void testDeleteVetError() throws Exception {
         Vet newVet = vets.get(0);
         ObjectMapper mapper = new ObjectMapper();
         String newVetAsJSON = mapper.writeValueAsString(newVet);
         given(this.vetService.findVetById(-1)).willReturn(null);
         given()
-            .auth().none()
+            .auth().oauth2(generateValidVetAdminToken())
             .accept(ContentType.JSON)
             .contentType(ContentType.JSON)
             .body(newVetAsJSON)

@@ -17,6 +17,7 @@
 package com.mpbauer.serverless.samples.petclinic.owners.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mpbauer.serverless.samples.petclinic.owners.AbstractIntegrationTest;
 import com.mpbauer.serverless.samples.petclinic.owners.model.Owner;
 import com.mpbauer.serverless.samples.petclinic.owners.model.Pet;
 import com.mpbauer.serverless.samples.petclinic.owners.model.PetType;
@@ -46,7 +47,7 @@ import static org.mockito.BDDMockito.given;
  */
 @QuarkusTest
 @QuarkusTestResource(H2DatabaseTestResource.class)
-class OwnerRestControllerTests {
+class OwnerRestControllerTests extends AbstractIntegrationTest {
 
     @InjectMock
     OwnerService ownerService;
@@ -119,102 +120,95 @@ class OwnerRestControllerTests {
     }
 
     @Test
-        //@WithMockUser(roles="OWNER_ADMIN") // TODO
     void testGetOwnerSuccess() {
         given(this.ownerService.findOwnerById(1)).willReturn(owners.get(0));
 
         given()
-                .auth().none()  // TODO change to JWT Token Authentication
-                .when()
-                .get("/api/owners/1")
-                .then()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
-                .body("id", equalTo(1))
-                .body("firstName", equalTo("George"));
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .when()
+            .get("/api/owners/1")
+            .then()
+            .statusCode(200)
+            .contentType(ContentType.JSON)
+            .body("id", equalTo(1))
+            .body("firstName", equalTo("George"));
     }
 
-    //@WithMockUser(roles = "OWNER_ADMIN")
     @Test
     void testGetOwnerNotFound() {
         given(this.ownerService.findOwnerById(-1)).willReturn(null);
         given()
-                .auth().none() // TODO change to JWT Token Authentication
-                .accept(ContentType.JSON)
-                .when()
-                .get("/api/owners/-1")
-                .then()
-                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .when()
+            .get("/api/owners/-1")
+            .then()
+            .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
-        //@WithMockUser(roles = "OWNER_ADMIN")
     void testGetOwnersListSuccess() {
         owners.remove(0);
         owners.remove(1);
         given(this.ownerService.findOwnerByLastName("Davis")).willReturn(owners);
         given()
-                .auth().none() // TODO change to JWT Token Authentication
-                .when()
-                .get("/api/owners/*/lastname/Davis")
-                .then()
-                .contentType(ContentType.JSON)
-                .statusCode(Response.Status.OK.getStatusCode())
-                .body("[0].id", equalTo(2))
-                .body("[0].firstName", equalTo("Betty"))
-                .body("[1].id", equalTo(4))
-                .body("[1].firstName", equalTo("Harold"));
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .when()
+            .get("/api/owners/*/lastname/Davis")
+            .then()
+            .contentType(ContentType.JSON)
+            .statusCode(Response.Status.OK.getStatusCode())
+            .body("[0].id", equalTo(2))
+            .body("[0].firstName", equalTo("Betty"))
+            .body("[1].id", equalTo(4))
+            .body("[1].firstName", equalTo("Harold"));
     }
 
     @Test
-        //@WithMockUser(roles = "OWNER_ADMIN")
     void testGetOwnersListNotFound() {
         owners.clear();
         given(this.ownerService.findOwnerByLastName("0")).willReturn(owners);
         given()
-                .auth().none() // TODO
-                .accept(ContentType.JSON)
-                .when()
-                .get("/api/owners/?lastName=0")
-                .then()
-                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .when()
+            .get("/api/owners/?lastName=0")
+            .then()
+            .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
-        //@WithMockUser(roles = "OWNER_ADMIN")
     void testGetAllOwnersSuccess() {
         owners.remove(0);
         owners.remove(1);
         given(this.ownerService.findAllOwners()).willReturn(owners);
         given()
-                .auth().none() // TODO
-                .when()
-                .get("/api/owners/")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .contentType(ContentType.JSON)
-                .body("[0].id", equalTo(2))
-                .body("[0].firstName", equalTo("Betty"))
-                .body("[1].id", equalTo(4))
-                .body("[1].firstName", equalTo("Harold"));
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .when()
+            .get("/api/owners/")
+            .then()
+            .statusCode(Response.Status.OK.getStatusCode())
+            .contentType(ContentType.JSON)
+            .body("[0].id", equalTo(2))
+            .body("[0].firstName", equalTo("Betty"))
+            .body("[1].id", equalTo(4))
+            .body("[1].firstName", equalTo("Harold"));
     }
 
     @Test
-        //@WithMockUser(roles = "OWNER_ADMIN")
     void testGetAllOwnersNotFound() {
         owners.clear();
         given(this.ownerService.findAllOwners()).willReturn(owners);
         given()
-                .auth().none() // TODO
-                .accept(ContentType.JSON)
-                .when()
-                .get("/api/owners/")
-                .then()
-                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .when()
+            .get("/api/owners/")
+            .then()
+            .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
     @Test
-        //@WithMockUser(roles = "OWNER_ADMIN")
     void testCreateOwnerErrorIdSpecified() throws Exception {
         Owner newOwner = owners.get(0);
         newOwner.setId(999);
@@ -222,19 +216,18 @@ class OwnerRestControllerTests {
         String newOwnerAsJSON = mapper.writeValueAsString(newOwner);
 
         given()
-                .auth().none() // TODO
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newOwnerAsJSON)
-                .when()
-                .post("/api/owners/")
-                .then()
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
-                .header("errors", "[{\"objectName\":\"body\",\"fieldName\":\"id\",\"fieldValue\":\"999\",\"errorMessage\":\"must not be specified\"}]");
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newOwnerAsJSON)
+            .when()
+            .post("/api/owners/")
+            .then()
+            .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+            .header("errors", "[{\"objectName\":\"body\",\"fieldName\":\"id\",\"fieldValue\":\"999\",\"errorMessage\":\"must not be specified\"}]");
     }
 
     @Test
-        //@WithMockUser(roles = "OWNER_ADMIN")
     void testCreateOwnerError() throws Exception {
         Owner newOwner = owners.get(0);
         newOwner.setId(null);
@@ -243,18 +236,17 @@ class OwnerRestControllerTests {
         String newOwnerAsJSON = mapper.writeValueAsString(newOwner);
 
         given()
-                .auth().none() // TODO
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newOwnerAsJSON)
-                .when()
-                .post("/api/owners/")
-                .then()
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newOwnerAsJSON)
+            .when()
+            .post("/api/owners/")
+            .then()
+            .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
     }
 
     @Test
-        //@WithMockUser(roles = "OWNER_ADMIN")
     void testUpdateOwnerSuccess() throws Exception {
         given(this.ownerService.findOwnerById(1)).willReturn(owners.get(0));
         int ownerId = owners.get(0).getId();
@@ -270,30 +262,29 @@ class OwnerRestControllerTests {
         String newOwnerAsJSON = mapper.writeValueAsString(updatedOwner);
 
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newOwnerAsJSON)
-                .when()
-                .put("/api/owners/" + ownerId)
-                .then()
-                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newOwnerAsJSON)
+            .when()
+            .put("/api/owners/" + ownerId)
+            .then()
+            .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .when()
-                .get("/api/owners/" + ownerId)
-                .then()
-                .contentType(ContentType.JSON)
-                .statusCode(Response.Status.OK.getStatusCode())
-                .body("id", equalTo(1))
-                .body("firstName", equalTo("George I"));
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .when()
+            .get("/api/owners/" + ownerId)
+            .then()
+            .contentType(ContentType.JSON)
+            .statusCode(Response.Status.OK.getStatusCode())
+            .body("id", equalTo(1))
+            .body("firstName", equalTo("George I"));
     }
 
     @Test
-        //@WithMockUser(roles = "OWNER_ADMIN")
     void testUpdateOwnerSuccessNoBodyId() throws Exception {
         given(this.ownerService.findOwnerById(1)).willReturn(owners.get(0));
         int ownerId = owners.get(0).getId();
@@ -307,30 +298,29 @@ class OwnerRestControllerTests {
         String newOwnerAsJSON = mapper.writeValueAsString(updatedOwner);
 
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newOwnerAsJSON)
-                .when()
-                .put("/api/owners/" + ownerId)
-                .then()
-                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newOwnerAsJSON)
+            .when()
+            .put("/api/owners/" + ownerId)
+            .then()
+            .statusCode(Response.Status.NO_CONTENT.getStatusCode());
 
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .when()
-                .get("/api/owners/" + ownerId)
-                .then()
-                .contentType(ContentType.JSON)
-                .statusCode(Response.Status.OK.getStatusCode())
-                .body("id", equalTo(ownerId))
-                .body("firstName", equalTo("George I"));
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .when()
+            .get("/api/owners/" + ownerId)
+            .then()
+            .contentType(ContentType.JSON)
+            .statusCode(Response.Status.OK.getStatusCode())
+            .body("id", equalTo(ownerId))
+            .body("firstName", equalTo("George I"));
     }
 
     @Test
-        //@WithMockUser(roles = "OWNER_ADMIN")
     void testUpdateOwnerErrorBodyIdMismatchWithPathId() throws Exception {
         int ownerId = owners.get(0).getId();
         Owner updatedOwner = new Owner();
@@ -345,19 +335,18 @@ class OwnerRestControllerTests {
         String newOwnerAsJSON = mapper.writeValueAsString(updatedOwner);
 
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newOwnerAsJSON)
-                .when()
-                .put("/api/owners/" + ownerId)
-                .then()
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
-                .header("errors", "[{\"objectName\":\"body\",\"fieldName\":\"id\",\"fieldValue\":\"-1\",\"errorMessage\":\"does not match pathId: 1\"}]");
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newOwnerAsJSON)
+            .when()
+            .put("/api/owners/" + ownerId)
+            .then()
+            .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+            .header("errors", "[{\"objectName\":\"body\",\"fieldName\":\"id\",\"fieldValue\":\"-1\",\"errorMessage\":\"does not match pathId: 1\"}]");
     }
 
     @Test
-        //@WithMockUser(roles = "OWNER_ADMIN")
     void testUpdateOwnerError() throws Exception {
         Owner newOwner = owners.get(0);
         newOwner.setFirstName("");
@@ -365,19 +354,18 @@ class OwnerRestControllerTests {
         String newOwnerAsJSON = mapper.writeValueAsString(newOwner);
 
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newOwnerAsJSON)
-                .when()
-                .put("/api/owners/1")
-                .then()
-                .contentType(ContentType.JSON)
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newOwnerAsJSON)
+            .when()
+            .put("/api/owners/1")
+            .then()
+            .contentType(ContentType.JSON)
+            .statusCode(Response.Status.BAD_REQUEST.getStatusCode());
     }
 
     @Test
-        //@WithMockUser(roles = "OWNER_ADMIN")
     void testDeleteOwnerSuccess() throws Exception {
         Owner newOwner = owners.get(0);
         ObjectMapper mapper = new ObjectMapper();
@@ -385,18 +373,17 @@ class OwnerRestControllerTests {
         given(this.ownerService.findOwnerById(1)).willReturn(owners.get(0));
 
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newOwnerAsJSON)
-                .when()
-                .delete("/api/owners/1")
-                .then()
-                .statusCode(Response.Status.NO_CONTENT.getStatusCode());
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newOwnerAsJSON)
+            .when()
+            .delete("/api/owners/1")
+            .then()
+            .statusCode(Response.Status.NO_CONTENT.getStatusCode());
     }
 
     @Test
-        //@WithMockUser(roles = "OWNER_ADMIN")
     void testDeleteOwnerError() throws Exception {
         Owner newOwner = owners.get(0);
         ObjectMapper mapper = new ObjectMapper();
@@ -404,13 +391,13 @@ class OwnerRestControllerTests {
         given(this.ownerService.findOwnerById(-1)).willReturn(null);
 
         given()
-                .auth().none()
-                .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .body(newOwnerAsJSON)
-                .when()
-                .delete("/api/owners/-1")
-                .then()
-                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+            .auth().oauth2(generateValidOwnerAdminToken())
+            .accept(ContentType.JSON)
+            .contentType(ContentType.JSON)
+            .body(newOwnerAsJSON)
+            .when()
+            .delete("/api/owners/-1")
+            .then()
+            .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 }
