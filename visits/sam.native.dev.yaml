@@ -31,9 +31,9 @@
         Handler: not.used.in.provided.runtimei
         Runtime: provided
         CodeUri: target/function.zip
-        MemorySize: 512
+        MemorySize: 1024
         Policies: AWSLambdaBasicExecutionRole
-        Timeout: 15
+        Timeout: 45
         Environment:
           Variables:
             DISABLE_SIGNAL_HANDLERS: true
