@@ -10,75 +10,76 @@ DROP TABLE users IF EXISTS;
 
 
 CREATE TABLE vets (
-  id         INTEGER IDENTITY PRIMARY KEY,
-  first_name VARCHAR(30),
-  last_name  VARCHAR(30)
+                      id         INTEGER IDENTITY PRIMARY KEY,
+                      first_name VARCHAR(30),
+                      last_name  VARCHAR(30)
 );
 CREATE INDEX vets_last_name ON vets (last_name);
 
 CREATE TABLE specialties (
-  id   INTEGER IDENTITY PRIMARY KEY,
-  name VARCHAR(80)
+                             id   INTEGER IDENTITY PRIMARY KEY,
+                             name VARCHAR(80)
 );
 CREATE INDEX specialties_name ON specialties (name);
 
 CREATE TABLE vet_specialties (
-  vet_id       INTEGER NOT NULL,
-  specialty_id INTEGER NOT NULL
+                                 vet_id       INTEGER NOT NULL,
+                                 specialty_id INTEGER NOT NULL
 );
 ALTER TABLE vet_specialties ADD CONSTRAINT fk_vet_specialties_vets FOREIGN KEY (vet_id) REFERENCES vets (id);
 ALTER TABLE vet_specialties ADD CONSTRAINT fk_vet_specialties_specialties FOREIGN KEY (specialty_id) REFERENCES specialties (id);
 
 CREATE TABLE types (
-  id   INTEGER IDENTITY PRIMARY KEY,
-  name VARCHAR(80)
+                       id   INTEGER IDENTITY PRIMARY KEY,
+                       name VARCHAR(80)
 );
 CREATE INDEX types_name ON types (name);
 
 CREATE TABLE owners (
-  id         INTEGER IDENTITY PRIMARY KEY,
-  first_name VARCHAR(30),
-  last_name  VARCHAR_IGNORECASE(30),
-  address    VARCHAR(255),
-  city       VARCHAR(80),
-  telephone  VARCHAR(20)
+                        id         INTEGER IDENTITY PRIMARY KEY,
+                        first_name VARCHAR(30),
+                        last_name  VARCHAR_IGNORECASE(30),
+                        address    VARCHAR(255),
+                        city       VARCHAR(80),
+                        telephone  VARCHAR(20)
 );
 CREATE INDEX owners_last_name ON owners (last_name);
 
 CREATE TABLE pets (
-  id         INTEGER IDENTITY PRIMARY KEY,
-  name       VARCHAR(30),
-  birth_date DATE,
-  type_id    INTEGER NOT NULL,
-  owner_id   INTEGER NOT NULL
+                      id         INTEGER IDENTITY PRIMARY KEY,
+                      name       VARCHAR(30),
+                      birth_date DATE,
+                      type_id    INTEGER NOT NULL,
+                      owner_id   INTEGER NOT NULL
 );
 ALTER TABLE pets ADD CONSTRAINT fk_pets_owners FOREIGN KEY (owner_id) REFERENCES owners (id);
 ALTER TABLE pets ADD CONSTRAINT fk_pets_types FOREIGN KEY (type_id) REFERENCES types (id);
 CREATE INDEX pets_name ON pets (name);
 
 CREATE TABLE visits (
-  id          INTEGER IDENTITY PRIMARY KEY,
-  pet_id      INTEGER NOT NULL,
-  visit_date  DATE,
-  description VARCHAR(255)
+                        id          INTEGER IDENTITY PRIMARY KEY,
+                        pet_id      INTEGER NOT NULL,
+                        visit_date  DATE,
+                        description VARCHAR(255)
 );
 ALTER TABLE visits ADD CONSTRAINT fk_visits_pets FOREIGN KEY (pet_id) REFERENCES pets (id);
 CREATE INDEX visits_pet_id ON visits (pet_id);
 
 CREATE  TABLE users (
-  username    VARCHAR(20) NOT NULL ,
-  password    VARCHAR(20) NOT NULL ,
-  enabled     BOOLEAN DEFAULT TRUE NOT NULL ,
-  PRIMARY KEY (username)
+                        username    VARCHAR(20) NOT NULL ,
+                        password    VARCHAR(20) NOT NULL ,
+                        enabled     BOOLEAN DEFAULT TRUE NOT NULL ,
+                        PRIMARY KEY (username)
 );
 
 CREATE TABLE roles (
-  id              INTEGER IDENTITY PRIMARY KEY,
-  username        VARCHAR(20) NOT NULL,
-  role            VARCHAR(20) NOT NULL
+                       id              INTEGER IDENTITY PRIMARY KEY,
+                       username        VARCHAR(20) NOT NULL,
+                       role            VARCHAR(20) NOT NULL
 );
 ALTER TABLE roles ADD CONSTRAINT fk_username FOREIGN KEY (username) REFERENCES users (username);
 CREATE INDEX fk_username_idx ON roles (username);
+
 
 INSERT INTO vets VALUES (1, 'James', 'Carter');
 INSERT INTO vets VALUES (2, 'Helen', 'Leary');
@@ -122,7 +123,6 @@ INSERT INTO pets VALUES (4, 'Jewel', '2010-03-07', 2, 3);
 INSERT INTO pets VALUES (5, 'Iggy', '2010-11-30', 3, 4);
 INSERT INTO pets VALUES (6, 'George', '2010-01-20', 4, 5);
 INSERT INTO pets VALUES (7, 'Samantha', '2012-09-04', 1, 6);
-
 INSERT INTO pets VALUES (8, 'Max', '2012-09-04', 1, 6);
 INSERT INTO pets VALUES (9, 'Lucky', '2011-08-06', 5, 7);
 INSERT INTO pets VALUES (10, 'Mulligan', '2007-02-24', 2, 8);
@@ -131,11 +131,11 @@ INSERT INTO pets VALUES (12, 'Lucky', '2010-06-24', 2, 10);
 INSERT INTO pets VALUES (13, 'Sly', '2012-06-08', 1, 10);
 
 INSERT INTO visits VALUES (1, 7, '2013-01-01', 'rabies shot');
-INSERT INTO visits VALUES (2, 8, '2013-01-05', 'rabies shot 5');
+INSERT INTO visits VALUES (2, 8, '2013-01-02', 'rabies shot');
 INSERT INTO visits VALUES (3, 8, '2013-01-03', 'neutered');
 INSERT INTO visits VALUES (4, 7, '2013-01-04', 'spayed');
 
-INSERT INTO users(username,password,enabled) VALUES ('admin','admin', true);
+INSERT INTO users(username,password,enabled) VALUES ('admin','{noop}admin', true);
 
 INSERT INTO roles (username, role) VALUES ('admin', 'ROLE_OWNER_ADMIN');
 INSERT INTO roles (username, role) VALUES ('admin', 'ROLE_VET_ADMIN');
