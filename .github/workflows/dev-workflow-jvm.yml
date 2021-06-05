@@ -1,0 +1,429 @@
+name: DevelopmentCI-JVM
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+
+jobs:
+  # JOB to run change detection
+  changes:
+    runs-on: ubuntu-latest
+    # Set job outputs to values from filter step
+    outputs:
+      owners: ${{ steps.filter.outputs.owners }}
+      pets: ${{ steps.filter.outputs.pets }}
+      pettypes: ${{ steps.filter.outputs.pettypes }}
+      specialties: ${{ steps.filter.outputs.specialties }}
+      users: ${{ steps.filter.outputs.users }}
+      vets: ${{ steps.filter.outputs.vets }}
+      visits: ${{ steps.filter.outputs.visits }}
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            owners:
+              - 'owners/**'
+            pets:
+              - 'pets/**'
+            pettypes:
+              - 'pettypes/**'
+            specialties:
+              - 'specialties/**'
+            users:
+              - 'users/**'
+            vets:
+              - 'vets/**'
+            visits:
+              - 'visits/**'
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: owners
+  # ------------------------------------------------------------------------- #
+
+  # Job to build and deploy maven submodule 'owners'
+  build-submodule-owners:
+    needs: changes
+    if: ${{ needs.changes.outputs.owners == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        working-directory: ./owners
+        run: mvn clean package
+
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Deploy to AWS Lambda using SAM
+      - name: 'SAM Deploy'
+        working-directory: ./owners
+        run: |
+          sam deploy --template-file sam.jvm.dev.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-owners \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: pets
+  # ------------------------------------------------------------------------- #
+
+  # Job to build and deploy maven submodule 'pets'
+  build-submodule-pets:
+    needs: changes
+    if: ${{ needs.changes.outputs.pets == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        working-directory: ./pets
+        run: mvn clean package
+
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
+        working-directory: ./pets
+        run: |
+          sam deploy --template-file sam.jvm.dev.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-pets \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: pettypes
+  # ------------------------------------------------------------------------- #
+
+  # Job to build and deploy maven submodule 'pettypes'
+  build-submodule-pettypes:
+    needs: changes
+    if: ${{ needs.changes.outputs.pettypes == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        working-directory: ./pettypes
+        run: mvn clean package
+
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
+        working-directory: ./pettypes
+        run: |
+          sam deploy --template-file sam.jvm.dev.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-pettypes \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: specialties
+  # ------------------------------------------------------------------------- #
+
+  # Job to build and deploy maven submodule 'specialties'
+  build-submodule-specialties:
+    needs: changes
+    if: ${{ needs.changes.outputs.specialties == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        working-directory: ./specialties
+        run: mvn clean package
+
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
+        working-directory: ./specialties
+        run: |
+          sam deploy --template-file sam.jvm.dev.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-specialties \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: users
+  # ------------------------------------------------------------------------- #
+
+  # Job to build and deploy maven submodule 'users'
+  build-submodule-users:
+    needs: changes
+    if: ${{ needs.changes.outputs.users == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        working-directory: ./users
+        run: mvn clean package
+
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
+        working-directory: ./users
+        run: |
+          sam deploy --template-file sam.jvm.dev.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-users \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: vets
+  # ------------------------------------------------------------------------- #
+
+  # Job to build and deploy maven submodule 'vets'
+  build-submodule-vets:
+    needs: changes
+    if: ${{ needs.changes.outputs.vets == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        working-directory: ./vets
+        run: mvn clean package
+
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
+        working-directory: ./vets
+        run: |
+          sam deploy --template-file sam.jvm.dev.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-vets \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
+
+  # ------------------------------------------------------------------------- #
+  #  Build Job for Maven Submodule: visits
+  # ------------------------------------------------------------------------- #
+
+  # Job to build and deploy maven submodule 'visits'
+  build-submodule-visits:
+    needs: changes
+    if: ${{ needs.changes.outputs.visits == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Clone git project
+      - name: 'Clone Git Project'
+        uses: actions/checkout@v2
+
+      # Set up JDK 11
+      - name: 'Set up JDK 11'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Build and test the application
+      - name: 'Build & Test'
+        working-directory: ./visits
+        run: mvn clean package
+
+      # Install dependencies required installing the AWS CLI
+      - name: 'Install Dependencies with Apt Get'
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+
+      - name: 'Configure AWS credentials'
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Deploy to AWS Lambda using SAM
+      - name: 'Deploy to AWS Lambda'
+        working-directory: ./visits
+        run: |
+          sam deploy --template-file sam.jvm.dev.yaml \
+            --stack-name quarkus-petclinic-rest-aws-lambda-jvm-dev-visits \
+            --s3-bucket ${{ secrets.AWS_LAMBDA_S3_BUCKET_DEV }} \
+            --capabilities CAPABILITY_IAM \
+            --region ${{ secrets.AWS_REGION }} \
+            --parameter-overrides \
+                dbUsername=${{ secrets.AWS_DB_USERNAME }} \
+                dbPassword=${{ secrets.AWS_DB_PASSWORD }} \
+                dbHost=${{ secrets.AWS_DB_HOST }} \
+                dbPort=${{ secrets.AWS_DB_PORT }} \
+                dbDatabase=${{ secrets.AWS_DB_DATABASE }}
