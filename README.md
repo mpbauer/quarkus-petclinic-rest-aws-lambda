@@ -1,12 +1,19 @@
 [![Quarkus](docs/images/quarkus-logo.png)](https://quarkus.io/)
 
-# Quarkus PetClinic Sample Application using AWS Lambda
+# [Quarkus PetClinic Sample Application using AWS Lambda](https://github.com/mpbauer/quarkus-petclinic-rest-aws-lambda)
 
 This project is a modified version
 of [mpbauer/quarkus-petclinic-rest](https://github.com/mpbauer/quarkus-petclinic-rest) and splits the monolithic app
 into several modules by using the `Services Pattern` according to
 this [article](https://www.serverless.com/blog/serverless-architecture-code-patterns). Each module can de deployed
 individually.
+
+---
+**NOTE**
+
+This project is based upon code from the commit reference `f97f1d44580d9950463043b451902f2e4955dea7` of the repository [spring-petclinic/spring-petclinic-rest](https://github.com/spring-petclinic/spring-petclinic-rest).
+
+---
 
 ## Understanding the Spring Petclinic application with a few diagrams
 
